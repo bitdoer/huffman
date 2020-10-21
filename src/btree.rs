@@ -1,19 +1,33 @@
 use std::collections::HashMap;
 
+/// A custom-made B-tree for doing Huffman coding
 pub struct HuffTree {
+    /// A pointer to the head(/root) of the tree
     head: Link,
 }
 
+/// A type alias for a pointer to a tree node
 type Link = Option<Box<Node>>;
 
+/// A node struct containing frequencies, and pointers to children
 struct Node {
+    /// Leaf nodes will contain a char; others will not
     ch: Option<char>,
+    /// All nodes will contain a character frequency; this gets summed up to help with priority queue implementation
     freq: i32,
+    /// A pointer to the left child
     left: Link,
+    /// A pointer to the right child
     right: Link,
 }
 
 impl Node {
+    /// Creates a new (leaf) node for the Huffman tree
+    ///
+    /// # Arguments
+    /// 
+    /// * `ch: char`: the char in the leaf node
+    /// * `freq: i32`: that char's frequency
     fn new(ch: char, freq: i32) -> Self {
         Node {
             ch: Some(ch),
@@ -25,12 +39,17 @@ impl Node {
 }
 
 impl HuffTree {
+    /// Creates a new empty Huffman tree
     pub fn new() -> Self {
         HuffTree {
             head: None,
         }
     }
-    // this function will take an input string and return a hash map of its characters and frequencies
+    /// Takes an input string and return a hash map of its characters and frequencies
+    ///
+    /// # Arguments
+    /// 
+    /// * `input: &String`: a shared ref to the string to be processed
     pub fn find_input_freqs(input: &String) -> HashMap<char, i32> {
         // make an iterator over the string,
         let mut it = input.chars();
@@ -46,7 +65,11 @@ impl HuffTree {
         char_map
     }
 
-    // this function will do the work of constructing the huffman tree, given a map of character frequency
+    /// Constructs the huffman tree, given a map of character frequencies
+    /// 
+    /// # Arguments
+    /// 
+    /// * `char_map: &HashMap<char, i32>`: the hash map in question (from `find_input_freqs()`)
     pub fn populate_tree(&mut self, char_map: &HashMap<char, i32>) {
         // set up an empty vector of nodes,
         let mut char_freqs: Vec<Node> = Vec::new();
@@ -79,8 +102,7 @@ impl HuffTree {
         self.head = char_freqs.pop().map(|node| { Box::new(node) });
     }
 
-    // this is a function that makes the huffman coding map once the tree is constructed, using tail recursion
-    // to allow tree traversal
+    /// Makes the Huffman coding map once the tree is constructed, using tail recursion for tree traversal
     pub fn generate_huffman_map(&mut self) -> HashMap<char, String> {
         let mut huffman_map: HashMap<char, String> = HashMap::new();
         // we begin the tail recursion, passing huffman_map mutably so it gets updated through the recursion
@@ -88,7 +110,12 @@ impl HuffTree {
         huffman_map
     }
 
-    // this function takes the uncompressed input string and just converts it straight into its huffman coded version
+    /// Takes the uncompressed input string and just converts it straight into its huffman coded version
+    /// 
+    /// # Arguments
+    /// 
+    /// `input: &String`: a shared ref to the string to be encoded
+    /// `huffman_map: &Hashmap<char, String>`: the Huffman coding map (gotten from `generate_huffman_map()`)
     pub fn encode(input: &String, huffman_map: &HashMap<char, String>) -> String {
         let mut encoded_str = String::new();
         for ch in input.chars() {
@@ -97,7 +124,11 @@ impl HuffTree {
         encoded_str
     }
 
-    // this function traverses the tree so as to decode the huffman-coded string, using tail recursion to do so
+    /// Traverses the tree to decode the huffman-coded string, using tail recursion to do so
+    ///
+    /// # Arguments
+    ///
+    /// `encoded_str: &String`: the Huffman-encoded string to be decoded
     pub fn decode(&self, encoded_str: &String) -> String {
         let mut decoded_str = String::new();
         let mut encoded_str_cpy = encoded_str.clone();
@@ -107,7 +138,11 @@ impl HuffTree {
         decoded_str
     }
     
-    // this, finally, is the interface wrapper function that, true to name, does it all
+    /// Shitty interface wrapper function that, true to name, does it all
+    ///
+    /// # Arguments
+    /// 
+    /// `input: &String`: a shared ref to the string to be manipulated
     pub fn do_it_all(input: &String) -> String {
         let uncompressed_size = input.len() * 8;
         let mut hufftree = HuffTree::new();
