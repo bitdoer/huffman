@@ -65,7 +65,7 @@ impl HuffTree {
         char_map
     }
 
-    /// Constructs the huffman tree, given a map of character frequencies
+    /// Constructs the Huffman tree, given a map of character frequencies
     /// 
     /// ## Arguments
     /// 
