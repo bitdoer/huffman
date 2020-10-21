@@ -24,10 +24,10 @@ struct Node {
 impl Node {
     /// Creates a new (leaf) node for the Huffman tree
     ///
-    /// # Arguments
+    /// ## Arguments
     /// 
-    /// * `ch: char`: the char in the leaf node
-    /// * `freq: i32`: that char's frequency
+    /// * `ch`: the char in the leaf node
+    /// * `freq`: that char's frequency
     fn new(ch: char, freq: i32) -> Self {
         Node {
             ch: Some(ch),
@@ -47,9 +47,9 @@ impl HuffTree {
     }
     /// Takes an input string and return a hash map of its characters and frequencies
     ///
-    /// # Arguments
+    /// ## Arguments
     /// 
-    /// * `input: &String`: a shared ref to the string to be processed
+    /// * `input`: a shared ref to the string to be processed
     pub fn find_input_freqs(input: &String) -> HashMap<char, i32> {
         // make an iterator over the string,
         let mut it = input.chars();
@@ -67,9 +67,9 @@ impl HuffTree {
 
     /// Constructs the huffman tree, given a map of character frequencies
     /// 
-    /// # Arguments
+    /// ## Arguments
     /// 
-    /// * `char_map: &HashMap<char, i32>`: the hash map in question (from `find_input_freqs()`)
+    /// * `char_map`: the hash map in question (from `find_input_freqs()`)
     pub fn populate_tree(&mut self, char_map: &HashMap<char, i32>) {
         // set up an empty vector of nodes,
         let mut char_freqs: Vec<Node> = Vec::new();
@@ -112,10 +112,10 @@ impl HuffTree {
 
     /// Takes the uncompressed input string and just converts it straight into its huffman coded version
     /// 
-    /// # Arguments
+    /// ## Arguments
     /// 
-    /// `input: &String`: a shared ref to the string to be encoded
-    /// `huffman_map: &Hashmap<char, String>`: the Huffman coding map (gotten from `generate_huffman_map()`)
+    /// `input`: a shared ref to the string to be encoded
+    /// `huffman_map`: the Huffman coding map (gotten from `generate_huffman_map()`)
     pub fn encode(input: &String, huffman_map: &HashMap<char, String>) -> String {
         let mut encoded_str = String::new();
         for ch in input.chars() {
@@ -126,9 +126,9 @@ impl HuffTree {
 
     /// Traverses the tree to decode the huffman-coded string, using tail recursion to do so
     ///
-    /// # Arguments
+    /// ## Arguments
     ///
-    /// `encoded_str: &String`: the Huffman-encoded string to be decoded
+    /// `encoded_str`: the Huffman-encoded string to be decoded
     pub fn decode(&self, encoded_str: &String) -> String {
         let mut decoded_str = String::new();
         let mut encoded_str_cpy = encoded_str.clone();
@@ -140,9 +140,9 @@ impl HuffTree {
     
     /// Shitty interface wrapper function that, true to name, does it all
     ///
-    /// # Arguments
+    /// ## Arguments
     /// 
-    /// `input: &String`: a shared ref to the string to be manipulated
+    /// `input`: a shared ref to the string to be manipulated
     pub fn do_it_all(input: &String) -> String {
         let uncompressed_size = input.len() * 8;
         let mut hufftree = HuffTree::new();
@@ -170,7 +170,7 @@ impl HuffTree {
     }
 }
 
-// the main meat of the huffman map generation
+/// Tail recursive meat-and-potatoes of the huffman map generation
 fn huffman_map_step(curr: &Link, code: String, huffman_map: &mut HashMap<char, String>) {
     // make sure we're not on an empty node, first---that should terminate the recursion
     if curr.is_some() {
@@ -186,7 +186,7 @@ fn huffman_map_step(curr: &Link, code: String, huffman_map: &mut HashMap<char, S
     }
 }
 
-// the main meat of the decoding walking; logic is very similar to huffman map gen
+/// Tail recursive meat-and-potatoes of the decoding walking; logic is very similar to huffman map gen
 fn decode_step(curr: &Link, encoded_str: &mut String, decoded_str: &mut String) {
     // again, empty node should end recursion
     if curr.is_some() {
