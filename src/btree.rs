@@ -86,9 +86,9 @@ impl HuffTree {
         while char_freqs.len() > 1 {
             // we pop off the smallest two nodes, keeping their frequencies set aside because
             // the memory model hates me,
-            let right_freq = char_freqs.last().clone().unwrap().freq;
+            let right_freq = char_freqs.last().unwrap().freq;
             let right = char_freqs.pop().map(Box::new);
-            let left_freq = char_freqs.last().clone().unwrap().freq;
+            let left_freq = char_freqs.last().unwrap().freq;
             let left = char_freqs.pop().map(Box::new);
             // then push their parent node onto the vector,
             char_freqs.push(Node {
@@ -121,7 +121,7 @@ impl HuffTree {
     pub fn encode(input: &str, huffman_map: &HashMap<char, String>) -> String {
         let mut encoded_str = String::new();
         for ch in input.chars() {
-            encoded_str += huffman_map.clone().entry(ch).or_insert(String::new());
+            encoded_str += huffman_map.clone().entry(ch).or_insert_with(String::new);
         }
         encoded_str
     }
@@ -148,7 +148,7 @@ impl HuffTree {
     pub fn do_it_all(input: &str) -> String {
         let uncompressed_size = input.len() * 8;
         let mut hufftree = HuffTree::new();
-        let char_map = HuffTree::find_input_freqs(&input);
+        let char_map = HuffTree::find_input_freqs(input);
         println!("Character map:");
         for (key, val) in char_map.clone() {
             println!("{0}: {1}", key, val);
@@ -181,10 +181,7 @@ fn huffman_map_step(curr: &Link, code: String, huffman_map: &mut HashMap<char, S
             && <&Link>::clone(&curr).as_ref().unwrap().right.is_none()
         {
             // then the char in the leaf node gets mapped to the running bitstring
-            huffman_map.insert(
-                <&Link>::clone(&curr).as_ref().unwrap().ch.clone().unwrap(),
-                code,
-            );
+            huffman_map.insert(<&Link>::clone(&curr).as_ref().unwrap().ch.unwrap(), code);
         } else {
             // otherwise, step down the tree, and add a 0 to the running bitstring if we go left and a 1 if right
             huffman_map_step(
@@ -210,7 +207,7 @@ fn decode_step(curr: &Link, encoded_str: &mut String, decoded_str: &mut String) 
             && <&Link>::clone(&curr).as_ref().unwrap().right.is_none()
         {
             // attach the just-reached character
-            decoded_str.push(<&Link>::clone(&curr).as_ref().unwrap().ch.clone().unwrap());
+            decoded_str.push(<&Link>::clone(&curr).as_ref().unwrap().ch.unwrap());
         } else {
             // otherwise, traverse left or right depending on the just-removed leftmost bit in the carried encoded bitstring
             if encoded_str.remove(0) == '0' {
